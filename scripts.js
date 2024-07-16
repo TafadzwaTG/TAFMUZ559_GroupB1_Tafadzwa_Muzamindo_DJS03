@@ -112,22 +112,36 @@ class Booklist extends IBookList {
     this.appendBooksToFragment(fragment, this.page * BOOKS_PER_PAGE, (this.page + 1) * BOOKS_PER_PAGE);
     document.querySelector('[data-list-items]').appendChild(fragment);
     this.page += 1;
-    this.updateShowMoreButton;
+    this.updateShowMoreButton();
  }
 }
+ //Dropdown class adheres to IDropdown interface
+ class Dropdown extends IDropdown {
+    static createDropdownOptions(data, firstOptionText) {
+        const fragment = document.createDocumentFragment();
+        const firstOption = document.createElement('option');
+        firstOption.value ='any';
+        firstOption.innerText = firstOptionText;
+        fragment.appendChild(firstOption);
 
-const genreHtml = document.createDocumentFragment();
-const firstGenreElement = document.createElement("option");
-firstGenreElement.value = "any";
-firstGenreElement.innerText = "All Genres";
-genreHtml.appendChild(firstGenreElement);
+        for (const [id, name] of Object.entries(genres)) {
+            const option = document.createElement('option');
+            option.value = id;
+            option.innerText = name;
+            fragment.appendChild(option);
+        }
+        return fragment;
+    }
+    static initializeDropdowns(){
+        document.querySelector('[data-search-genres]').appendChild(this.createDropdownOptions(DataService.fethGenres(), 'All Genres'));
+        document.querySelector('[data-search-authors]').appendChild(this.createDropdownOptions(DataService.fethGenres(), 'All Authors'));
+     
+    }
+ }
 
-for (const [id, name] of Object.entries(genres)) {
-  const element = document.createElement("option");
-  element.value = id;
-  element.innerText = name;
-  genreHtml.appendChild(element);
-}
+
+
+
 
 document.querySelector("[data-search-genres]").appendChild(genreHtml);
 
