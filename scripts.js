@@ -1,31 +1,91 @@
-import { books, authors, genres, BOOKS_PER_PAGE } from './data.js'
+import { books, authors, genres, BOOKS_PER_PAGE } from './data.js';
 
-let page = 1;
-let matches = books
+//Interfaces
+class IBook{
+    createPreviewButton() {}
+}
 
-const starting = document.createDocumentFragment()
+class IBookList{
+    appendBooksToFragment() {}
+    updateBookList() {}
+    updateShowMoreButton() {}
+    handleSeachFormSubmit() {}
+    handleShowNoreButtonClick() {}
+}
 
-for (const { author, id, image, title } of matches.slice(0, BOOKS_PER_PAGE)) {
+class IThemeManager{
+    static setTheme() {}
+    static handleSettingsFormSubmit() {}
+}
+// Single Responsibility: Separate data fetching logic
+class DataService{
+    static fetchBooks(){
+        return books;
+    }
+    static fetchAuthors(){
+        return authors;
+    }
+    static fethGenres(){
+        return genres;
+    }
+
+}
+
+//Book Class adheres to IBook interface
+class Book extends IBook {
+    constructor({author, id, image, title, published, description}){
+        super();
+        this.author = author;
+        this.id = id;
+        this.image = image;
+        this.title = title;
+        this.published = published;
+        this.description = description;
+
+    
+}
+createPreviewButton() {
     const element = document.createElement('button')
-    element.classList = 'preview'
-    element.setAttribute('data-preview', id)
+    element.classList = 'preview';
+    element.setAttribute('data-preview', this.id);
 
     element.innerHTML = `
         <img
             class="preview__image"
-            src="${image}"
+            src="${this.image}"
         />
         
         <div class="preview__info">
-            <h3 class="preview__title">${title}</h3>
-            <div class="preview__author">${authors[author]}</div>
+            <h3 class="preview__title">${this.title}</h3>
+            <div class="preview__author">${authors[this.author]}</div>
         </div>
     `
 
-    starting.appendChild(element)
+    return element;
+}
+}
+//Booklist class adheres to IBookList interface
+class Booklist extends IBookList{
+    constructor(books){
+        super();
+        this.books = books;
+        this.page = 1;
+        this,matches = books;
+    }
+    appendBooksToFragment(fragment, start = 0, end = BOOKS_PER_PAGE){
+        for(const book of this.matches.slice(start, end)) {
+            const bookInstance = new Book(book);
+            fragment.appendChild(bookInstance.createPreviewButton());
+        }
+    }
+    updateBookList(){
+        const fragment = document.createDocumentFragment()
+        this.appendBooksToFragment(fragment);
+        document.querySelector('[data-list-items]').appendChild(fragment);
+    }
 }
 
-document.querySelector('[data-list-items]').appendChild(starting)
+
 
 const genreHtml = document.createDocumentFragment()
 const firstGenreElement = document.createElement('option')
