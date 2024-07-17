@@ -99,11 +99,17 @@ class Booklist extends IBookList {
 
     });
     this.page = 1;
-    document.querySelector('[data-list-message]').classList.toggle('list__message_show', this.matches.length < 1);
-    document.querySelector('[data-list-items]').innerHTML = '';
+     const listMessageElement = document.querySelector('[data-list-message]');
+     if(listMessageElement) {
+        listMessageElement.classList.toggle('list__message_show', this.matches.length < 1);
+     }
+    const listItemsElement = document.querySelector('[data-list-items]');
+    if (listItemsElement) {
+        listItemsElement.innerHTML = '';
     this.updateBookList();
     this.updateShowMoreButton();
     window.scrollTo({top: 0, behavior: 'smooth'});
+    }
     OverlayManager.closeOverlay('[data-search-overlay]');
  }
 
