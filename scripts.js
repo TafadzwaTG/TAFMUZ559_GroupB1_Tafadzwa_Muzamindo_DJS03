@@ -1,3 +1,4 @@
+// Import data and constants from external module
 import { books, authors, genres, BOOKS_PER_PAGE } from "./data.js";
 
 //Interfaces
@@ -6,18 +7,20 @@ class IBook {
 }
 
 class IBookList {
+  // Interface methods for managing book list
   appendBooksToFragment() {}
   updateBookList() {}
   updateShowMoreButton() {}
-  handleSeachFormSubmit() {}
+  handleSearchFormSubmit() {}
   handleShowMoreButtonClick() {}
 }
 
 class IThemeManager {
+  //Interface methods for managing themes
   static setTheme() {}
   static handleSettingsFormSubmit() {}
 }
-// Single Responsibility: Separate data fetching logic
+// Data service to fetch books, authors, and genres
 class DataService {
   static fetchBooks() {
     return books;
@@ -41,6 +44,7 @@ class Book extends IBook {
     this.published = published;
     this.description = description;
   }
+  // Method to create a preview button for a book
   createPreviewButton() {
     const element = document.createElement("button");
     element.classList = "preview";
@@ -69,27 +73,33 @@ class Booklist extends IBookList {
     this.page = 1;
     this.matches = books;
   }
+  // Append books to a document fragment
   appendBooksToFragment(fragment, start = 0, end = BOOKS_PER_PAGE) {
     for (const book of this.matches.slice(start, end)) {
       const bookInstance = new Book(book);
       fragment.appendChild(bookInstance.createPreviewButton());
     }
   }
+  // Update the displayed book list
   updateBookList() {
     const fragment = document.createDocumentFragment();
     this.appendBooksToFragment(fragment);
     document.querySelector("[data-list-items]").appendChild(fragment);
   }
+  // Updated the show more button based on remaining books
   updateShowMoreButton() {
     const remaining = this.matches.length - this.page * BOOKS_PER_PAGE;
     document.querySelector("[data-list-button]").innerText =
       `Show more (${remaining})`;
     document.querySelector("[data-list-button]").disabled = remaining <= 0;
   }
+  // Handle form submission for book search
   handleSearchFormSubmit(event){
     event.preventDefault();
     const formData = new FormData(event.target);
     const filters = Object.fromEntries(formData);
+
+    // Filter books based on form input
     this.matches = this.books.filter(book => {
         const genreMatch = filters.genre === 'any' || book.genres.includes(filters.genre);
         const titleMatch = filters.title.trim() === '' || book.title.toLowerCase().includes(filters.title.toLowerCase());
@@ -98,6 +108,7 @@ class Booklist extends IBookList {
         return genreMatch && titleMatch && authorMatch;
 
     });
+    // Reset page and update UI elements
     this.page = 1;
      const listMessageElement = document.querySelector('[data-list-message]');
      if(listMessageElement) {
@@ -112,7 +123,7 @@ class Booklist extends IBookList {
     }
     OverlayManager.closeOverlay('[data-search-overlay]');
  }
-
+// Handle show more button click to load more books
  handleShowMoreButtonClick(){
     const fragment = document.createDocumentFragment();
     this.appendBooksToFragment(fragment, this.page * BOOKS_PER_PAGE, (this.page + 1) * BOOKS_PER_PAGE);
@@ -121,14 +132,17 @@ class Booklist extends IBookList {
     this.updateShowMoreButton();
  }
 }
- //Dropdown class adheres to IDropdown interface
+ //Dropdown class for managing dropdowns
  class IDropdown {
+  // Static method to create dropdown options from data
     static createDropdownOptions(data, firstOptionText) {
         const fragment = document.createDocumentFragment();
         const firstOption = document.createElement('option');
         firstOption.value ='any';
         firstOption.innerText = firstOptionText;
         fragment.appendChild(firstOption);
+
+        // Create options from data entries
 
         for (const [id, name] of Object.entries(data)) {
             const option = document.createElement('option');
@@ -138,6 +152,7 @@ class Booklist extends IBookList {
         }
         return fragment;
     }
+    // Initialize dropdowns with data
     static initializeDropdowns(){
         document.querySelector('[data-search-genres]').appendChild(this.createDropdownOptions(DataService.fetchGenres(), 'All Genres'));
         document.querySelector('[data-search-authors]').appendChild(this.createDropdownOptions(DataService.fetchAuthors(), 'All Authors'));
@@ -146,6 +161,8 @@ class Booklist extends IBookList {
  }
  // ThemeManager class adheres to IThemeManager interface
  class ThemeManager extends IThemeManager {
+  
+  // Set theme based on user preferences
    static setTheme() {
      if (
        window.matchMedia &&
@@ -169,11 +186,14 @@ class Booklist extends IBookList {
        );
      }
    }
+
+   // Handle form submission for theme settings
    static handleSettingsFormSubmit(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
     const { theme } = Object.fromEntries(formData);
 
+//Apply selected theme
     if (theme === "night") {
       document.documentElement.style.setProperty(
         "--color-dark",
@@ -194,9 +214,11 @@ class Booklist extends IBookList {
 // CloseOverlay class adheres to IDdropdown interface
 
 class OverlayManager {
+  //close an overlay based on selector
   static closeOverlay(selector) {
     document.querySelector(selector).open = false;
   }
+  // open an overlay and optionally focus on an element
   static openOverlay(selector, focusSelector = null) {
     document.querySelector(selector).open = true;
     if (focusSelector) {
@@ -205,6 +227,7 @@ class OverlayManager {
   }
 }
 
+// Handle click on a book preview
 function handlePreviewClick(event) {
   const pathArray = Array.from(event.path || event.composedPath());
   const previewElement = pathArray.find((node) => node?.dataset?.preview);
@@ -230,16 +253,19 @@ function handlePreviewClick(event) {
 document.addEventListener('DOMContentLoaded',  () =>{
     const bookList = new Booklist(DataService.fetchBooks());
 
+// Intialize book list with initial books
     const startingFragment = document.createDocumentFragment();
     bookList.appendBooksToFragment(startingFragment);
     document.querySelector('[data-list-items]').appendChild(startingFragment);
 
+// Intialize dropdowns and theme
     IDropdown.initializeDropdowns();
     ThemeManager.setTheme();
-
+    
+    // Event listeners for overlays, forms, and buttons
     document.querySelector('[data-search-cancel]').addEventListener('click', () => OverlayManager.closeOverlay('[data-search-overlay]'));
     document.querySelector('[data-settings-cancel]').addEventListener('click', () => OverlayManager.closeOverlay('[data-settings-overlay]'));
-    document.querySelector('[data-header-search]').addEventListener('click', () => OverlayManager.closeOverlay('[data-search-overlay]', '[data-search-title]'));
+    document.querySelector('[data-header-search]').addEventListener('click', () => OverlayManager.openOverlay('[data-search-overlay]', '[data-search-title]'));
     document.querySelector('[data-header-settings]').addEventListener('click', () => OverlayManager.openOverlay('[data-settings-overlay]'));
     document.querySelector('[data-list-close]').addEventListener('click', () => OverlayManager.closeOverlay('[data-list-active]'));
 
