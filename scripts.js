@@ -92,7 +92,7 @@ class Booklist extends IBookList {
     const filters = Object.fromEntries(formData);
     this.matches = this.books.filter(book => {
         const genreMatch = filters.genre === 'any' || book.genres.includes(filters.genre);
-        const titleMatch = filters.title.trim() === '' || book.title.toLowerCase().includes(filters.title.toLowerCase);
+        const titleMatch = filters.title.trim() === '' || book.title.toLowerCase().includes(filters.title.toLowerCase());
         const authorMatch = filters.author === 'any' || book.author === filters.author;
 
         return genreMatch && titleMatch && authorMatch;
@@ -104,7 +104,7 @@ class Booklist extends IBookList {
     this.updateBookList();
     this.updateShowMoreButton();
     window.scrollTo({top: 0, behavior: 'smooth'});
-    closeOverlay('[data-search-overlay');
+    OverlayManager.closeOverlay('[data-search-overlay]');
  }
 
  handleShowMoreButtonClick(){
@@ -124,7 +124,7 @@ class Booklist extends IBookList {
         firstOption.innerText = firstOptionText;
         fragment.appendChild(firstOption);
 
-        for (const [id, name] of Object.entries(genres)) {
+        for (const [id, name] of Object.entries(data)) {
             const option = document.createElement('option');
             option.value = id;
             option.innerText = name;
@@ -134,7 +134,7 @@ class Booklist extends IBookList {
     }
     static initializeDropdowns(){
         document.querySelector('[data-search-genres]').appendChild(this.createDropdownOptions(DataService.fetchGenres(), 'All Genres'));
-        document.querySelector('[data-search-authors]').appendChild(this.createDropdownOptions(DataService.fetchGenres(), 'All Authors'));
+        document.querySelector('[data-search-authors]').appendChild(this.createDropdownOptions(DataService.fetchAuthors(), 'All Authors'));
      
     }
  }
@@ -182,7 +182,7 @@ class Booklist extends IBookList {
       );
     }
 
-    closeOverlay('[data-settings-overlay]');
+    OverlayManager.closeOverlay('[data-settings-overlay]');
    }
  }
 // CloseOverlay class adheres to IDdropdown interface
@@ -215,7 +215,7 @@ function handlePreviewClick(event) {
       document.querySelector("[data-list-subtitle]").innerText =
         `${authors[book.author]} (${new Date(book.published).getFullYear()})`;
       document.querySelector("[data-list-description]").innerText =
-        book.description;
+       book.description;
     }
   }
 }
@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded',  () =>{
     document.querySelector('[data-list-close]').addEventListener('click', () => OverlayManager.closeOverlay('[data-list-active]'));
 
     document.querySelector('[data-settings-form]').addEventListener('submit', ThemeManager.handleSettingsFormSubmit);
-    document.querySelector('[data-search-form]').addEventListener('submit', event => bookList.handleSeachFormSubmit(event));
+    document.querySelector('[data-search-form]').addEventListener('submit', event => bookList.handleSearchFormSubmit(event));
     document.querySelector('[data-list-button]').addEventListener('click', () => bookList.handleShowMoreButtonClick());
     document.querySelector('[data-list-items]').addEventListener('click', handlePreviewClick);
 
