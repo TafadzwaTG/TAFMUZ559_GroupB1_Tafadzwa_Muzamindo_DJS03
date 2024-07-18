@@ -9,19 +9,21 @@ class BookPreview extends HTMLElement{
 
         const image = document.createElement('img');
         image.classList.add('preview__image');
-        wrapper.append(image);
-
+        
         const info = document.createElement('div');
-        image.classList.add('preview__info');
-        wrapper.append(info);
-
+        info.classList.add('preview__info');
+        
         const title = document.createElement('h3');
-        image.classList.add('preview__title');
-        wrapper.append(title);
-
+        title.classList.add('preview__title');
+      
         const author = document.createElement('div');
-        image.classList.add('preview__author');
-        wrapper.append(author);
+        author.classList.add('preview__author');
+        
+
+        info.appendChild(title);
+        info.appendChild(author);
+        wrapper.appendChild(image);
+        wrapper.appendChild(info);
 
          //Add styles
         const style = document.createElement('style');
@@ -33,8 +35,8 @@ class BookPreview extends HTMLElement{
 
     }
         .preview__image{
-        width: 50px;
-        height: 75px;
+        width: 100px;
+        height: 150px;
         object-fit: cover;
         margin-right: 10px;
         }
@@ -50,7 +52,7 @@ class BookPreview extends HTMLElement{
         
         .preview__author{
         font-size: 0.874em;
-        coolr: #555;
+        color: #555;
         }
         `;
         shadow.appendChild(style);
