@@ -45,7 +45,7 @@ class Book extends IBook {
     this.description = description;
   }
   // Method to create a preview button for a book
-  createPreviewButton() {
+  createPreviewButton(book) {
     const element = document.createElement("button");
     element.classList = "preview";
     element.setAttribute("data-preview", this.id);
