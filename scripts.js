@@ -1,5 +1,6 @@
 // Import data and constants from external module
 import { books, authors, genres, BOOKS_PER_PAGE } from "./data.js";
+import './book-preview.js';
 
 //Interfaces
 class IBook {
@@ -45,25 +46,25 @@ class Book extends IBook {
     this.description = description;
   }
   // Method to create a preview button for a book
-  createPreviewButton(book) {
-    const element = document.createElement("button");
-    element.classList = "preview";
-    element.setAttribute("data-preview", this.id);
+  // createPreviewButton(book) {
+  //   const element = document.createElement("button");
+  //   element.classList = "preview";
+  //   element.setAttribute("data-preview", this.id);
 
-    element.innerHTML = `
-        <img
-            class="preview__image"
-            src="${this.image}"
-        />
+  //   element.innerHTML = `
+  //       <img
+  //           class="preview__image"
+  //           src="${this.image}"
+  //       />
         
-        <div class="preview__info">
-            <h3 class="preview__title">${this.title}</h3>
-            <div class="preview__author">${authors[this.author]}</div>
-        </div>
-    `;
+  //       <div class="preview__info">
+  //           <h3 class="preview__title">${this.title}</h3>
+  //           <div class="preview__author">${authors[this.author]}</div>
+  //       </div>
+  //   `;
 
-    return element;
-  }
+  //   return element;
+  // }
 }
 //Booklist class adheres to IBookList interface
 class Booklist extends IBookList {
@@ -76,8 +77,14 @@ class Booklist extends IBookList {
   // Append books to a document fragment
   appendBooksToFragment(fragment, start = 0, end = BOOKS_PER_PAGE) {
     for (const book of this.matches.slice(start, end)) {
-      const bookInstance = new Book(book);
-      fragment.appendChild(bookInstance.createPreviewButton());
+      const previewElement = document.createElement('book-preview');
+      previewElement.setAttribute('image', book.image);
+      previewElement.setAttribute('title', book.title);
+      previewElement.setAttribute('author', authors[book.author]);
+      previewElement.setAttribute('data-preview', book.id);
+
+      // const bookInstance = new Book(book);
+      fragment.appendChild(previewElement);
     }
   }
   // Update the displayed book list
@@ -104,7 +111,6 @@ class Booklist extends IBookList {
         const genreMatch = filters.genre === 'any' || book.genres.includes(filters.genre);
         const titleMatch = filters.title.trim() === '' || book.title.toLowerCase().includes(filters.title.toLowerCase());
         const authorMatch = filters.author === 'any' || book.author === filters.author;
-
         return genreMatch && titleMatch && authorMatch;
 
     });
