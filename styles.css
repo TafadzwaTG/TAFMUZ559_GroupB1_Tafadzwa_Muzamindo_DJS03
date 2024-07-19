@@ -213,7 +213,7 @@ option {
   background: rgba(var(--color-light), 1);
 }
 
-@media (min-width: 60rem) {
+/* @media (min-width: 60rem) {
   .preview {
     padding: 1rem;
   }
@@ -253,7 +253,7 @@ option {
 
 .preview__author {
   color: rgba(var(--color-dark), 0.4);
-}
+} */
 
 /* overlay */
 
