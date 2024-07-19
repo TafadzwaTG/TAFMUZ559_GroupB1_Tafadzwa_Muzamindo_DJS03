@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    fetch('./meta-tags.html')
+    fetch('./components/meta-tags.html')
       .then(response => response.text())
       .then(data => {
         const parser = new DOMParser();
