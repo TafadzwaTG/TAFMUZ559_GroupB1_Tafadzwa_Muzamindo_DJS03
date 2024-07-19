@@ -1,6 +1,7 @@
 // Import data and constants from external module
 import { books, authors, genres, BOOKS_PER_PAGE } from "./data.js";
 import './book-preview.js';
+import './overlay-manager.js'
 
 //Interfaces
 class IBook {
@@ -107,7 +108,7 @@ class Booklist extends IBookList {
     this.updateShowMoreButton();
     window.scrollTo({top: 0, behavior: 'smooth'});
     }
-    OverlayManager.closeOverlay('[data-search-overlay]');
+    document.querySelector('overlay-manager').closeOverlay('[data-search-overlay]');
  }
 // Handle show more button click to load more books
  handleShowMoreButtonClick(){
@@ -194,26 +195,10 @@ class Booklist extends IBookList {
       );
     }
 
-    OverlayManager.closeOverlay('[data-settings-overlay]');
+   document.querySelector('overlay-manager').closeOverlay('[data-settings-overlay]');
    }
  }
-// CloseOverlay class adheres to IDdropdown interface
-
-class OverlayManager {
-  //close an overlay based on selector
-  static closeOverlay(selector) {
-    document.querySelector(selector).open = false;
-  }
-  // open an overlay and optionally focus on an element
-  static openOverlay(selector, focusSelector = null) {
-    document.querySelector(selector).open = true;
-    if (focusSelector) {
-      document.querySelector(focusSelector).focus();
-    }
-  }
-}
-
-// Handle click on a book preview
+ // Handle click on a book preview
 function handlePreviewClick(event) {
   const pathArray = Array.from(event.path || event.composedPath());
   const previewElement = pathArray.find((node) => node?.dataset?.preview);
@@ -235,13 +220,17 @@ function handlePreviewClick(event) {
   }
 }
  // Event listeners for overlays, forms, and buttons
- function setupEventListeners(){
+ function setupEventListeners(bookList){
+  const overlayManager = document.querySelector('overlay-manager');
 
-  document.querySelector('[data-search-cancel]').addEventListener('click', () => OverlayManager.closeOverlay('[data-search-overlay]'));
-document.querySelector('[data-settings-cancel]').addEventListener('click', () => OverlayManager.closeOverlay('[data-settings-overlay]'));
-document.querySelector('[data-header-search]').addEventListener('click', () => OverlayManager.openOverlay('[data-search-overlay]', '[data-search-title]'));
-document.querySelector('[data-header-settings]').addEventListener('click', () => OverlayManager.openOverlay('[data-settings-overlay]'));
-document.querySelector('[data-list-close]').addEventListener('click', () => OverlayManager.closeOverlay('[data-list-active]'));
+  document.querySelector('[data-search-cancel]').addEventListener('click', () => overlayManager.closeOverlay('[data-search-overlay]'));
+document.querySelector('[data-settings-cancel]').addEventListener('click', () => overlayManager.closeOverlay('[data-settings-overlay]'));
+document.querySelector('[data-header-search]').addEventListener('click', () => {
+   overlayManager.openOverlay('[data-search-overlay]');
+    document.querySelector('[data-search-title]').focus();
+  });
+document.querySelector('[data-header-settings]').addEventListener('click', () => overlayManager.openOverlay('[data-settings-overlay]'));
+document.querySelector('[data-list-close]').addEventListener('click', () => overlayManager.closeOverlay('[data-list-active]'));
 
 document.querySelector('[data-settings-form]').addEventListener('submit', ThemeManager.handleSettingsFormSubmit);
 document.querySelector('[data-search-form]').addEventListener('submit', event => bookList.handleSearchFormSubmit(event));
@@ -263,7 +252,7 @@ document.addEventListener('DOMContentLoaded',  () =>{
     IDropdown.initializeDropdowns();
     ThemeManager.setTheme();
     
-  setupEventListeners(); 
+  setupEventListeners(bookList); 
 
 });
 
