@@ -45,26 +45,7 @@ class Book extends IBook {
     this.published = published;
     this.description = description;
   }
-  // Method to create a preview button for a book
-  // createPreviewButton(book) {
-  //   const element = document.createElement("button");
-  //   element.classList = "preview";
-  //   element.setAttribute("data-preview", this.id);
-
-  //   element.innerHTML = `
-  //       <img
-  //           class="preview__image"
-  //           src="${this.image}"
-  //       />
-        
-  //       <div class="preview__info">
-  //           <h3 class="preview__title">${this.title}</h3>
-  //           <div class="preview__author">${authors[this.author]}</div>
-  //       </div>
-  //   `;
-
-  //   return element;
-  // }
+ 
 }
 //Booklist class adheres to IBookList interface
 class Booklist extends IBookList {
@@ -83,7 +64,6 @@ class Booklist extends IBookList {
       previewElement.setAttribute('author', authors[book.author]);
       previewElement.setAttribute('data-preview', book.id);
 
-      // const bookInstance = new Book(book);
       fragment.appendChild(previewElement);
     }
   }
@@ -254,6 +234,21 @@ function handlePreviewClick(event) {
     }
   }
 }
+ // Event listeners for overlays, forms, and buttons
+ function setupEventListeners(){
+
+  document.querySelector('[data-search-cancel]').addEventListener('click', () => OverlayManager.closeOverlay('[data-search-overlay]'));
+document.querySelector('[data-settings-cancel]').addEventListener('click', () => OverlayManager.closeOverlay('[data-settings-overlay]'));
+document.querySelector('[data-header-search]').addEventListener('click', () => OverlayManager.openOverlay('[data-search-overlay]', '[data-search-title]'));
+document.querySelector('[data-header-settings]').addEventListener('click', () => OverlayManager.openOverlay('[data-settings-overlay]'));
+document.querySelector('[data-list-close]').addEventListener('click', () => OverlayManager.closeOverlay('[data-list-active]'));
+
+document.querySelector('[data-settings-form]').addEventListener('submit', ThemeManager.handleSettingsFormSubmit);
+document.querySelector('[data-search-form]').addEventListener('submit', event => bookList.handleSearchFormSubmit(event));
+document.querySelector('[data-list-button]').addEventListener('click', () => bookList.handleShowMoreButtonClick());
+document.querySelector('[data-list-items]').addEventListener('click', handlePreviewClick);
+}
+
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded',  () =>{
@@ -268,17 +263,7 @@ document.addEventListener('DOMContentLoaded',  () =>{
     IDropdown.initializeDropdowns();
     ThemeManager.setTheme();
     
-    // Event listeners for overlays, forms, and buttons
-    document.querySelector('[data-search-cancel]').addEventListener('click', () => OverlayManager.closeOverlay('[data-search-overlay]'));
-    document.querySelector('[data-settings-cancel]').addEventListener('click', () => OverlayManager.closeOverlay('[data-settings-overlay]'));
-    document.querySelector('[data-header-search]').addEventListener('click', () => OverlayManager.openOverlay('[data-search-overlay]', '[data-search-title]'));
-    document.querySelector('[data-header-settings]').addEventListener('click', () => OverlayManager.openOverlay('[data-settings-overlay]'));
-    document.querySelector('[data-list-close]').addEventListener('click', () => OverlayManager.closeOverlay('[data-list-active]'));
-
-    document.querySelector('[data-settings-form]').addEventListener('submit', ThemeManager.handleSettingsFormSubmit);
-    document.querySelector('[data-search-form]').addEventListener('submit', event => bookList.handleSearchFormSubmit(event));
-    document.querySelector('[data-list-button]').addEventListener('click', () => bookList.handleShowMoreButtonClick());
-    document.querySelector('[data-list-items]').addEventListener('click', handlePreviewClick);
+  setupEventListeners(); 
 
 });
 
