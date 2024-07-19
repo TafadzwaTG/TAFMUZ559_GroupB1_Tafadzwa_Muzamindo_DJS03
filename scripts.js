@@ -1,7 +1,7 @@
 // Import data and constants from external module
 import { books, authors, genres, BOOKS_PER_PAGE } from "./data.js";
-import './book-preview.js';
-import './overlay-manager.js'
+import './components/book-preview.js';
+import './components/overlay-manager.js'
 
 //Interfaces
 class IBook {
